@@ -1817,12 +1817,13 @@
 
   /* ── License gate ── */
   #license-gate {
-    position:fixed;inset:0;z-index:12000;
-    background:var(--bg-primary);
+    position:fixed;top:0;left:0;width:100%;height:100%;z-index:12000;
+    background:#0d1117;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:2rem 1.5rem;
+    overflow:hidden;
   }
-  #license-gate.hidden { display:none; }
+  #license-gate.hidden { display:none !important; }
   .lic-logo { font-size:3rem;margin-bottom:0.5rem; }
   .lic-title { font-size:1.6rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem; }
   .lic-sub { font-size:0.88rem;color:var(--text-muted);margin-bottom:2rem;text-align:center; }
