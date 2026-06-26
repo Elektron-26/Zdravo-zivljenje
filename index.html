@@ -17391,8 +17391,18 @@
     _qLang = lang;
     localStorage.setItem("zz_lang", lang);
     document.body.classList.toggle("lang-en", lang === "en");
-    var nameInput = document.getElementById("q-name");
-    if (nameInput) nameInput.placeholder = lang === "en" ? "e.g. Ana" : "npr. Ana";
+    var isEN = lang === "en";
+    var ph = [
+      ["q-name",        isEN ? "e.g. Ana"  : "npr. Ana"],
+      ["q-age",         isEN ? "e.g. 28"   : "npr. 28"],
+      ["q-height",      isEN ? "e.g. 175"  : "npr. 175"],
+      ["q-weight",      isEN ? "e.g. 80"   : "npr. 80"],
+      ["q-goal-weight", isEN ? "e.g. 72"   : "npr. 72"]
+    ];
+    ph.forEach(function(p) {
+      var el = document.getElementById(p[0]);
+      if (el) el.placeholder = p[1];
+    });
     showQuizGate();
   }
 
