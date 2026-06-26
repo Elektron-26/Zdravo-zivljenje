@@ -1838,6 +1838,59 @@
   .lic-buy { display:block;text-align:center;margin-top:1.25rem;font-size:0.82rem;color:var(--text-muted); }
   .lic-buy a { color:var(--green);text-decoration:none;font-weight:600; }
 
+  /* ── Quiz Funnel ── */
+  #quiz-gate {
+    position:fixed;top:0;left:0;width:100%;height:100%;z-index:13000;
+    background:#0d1117;
+    display:flex;flex-direction:column;align-items:center;
+    overflow-y:auto;
+  }
+  #quiz-gate.hidden { display:none !important; }
+  .quiz-progress-wrap { width:100%;max-width:420px;padding:1.5rem 1.5rem 0.5rem;flex-shrink:0; }
+  .quiz-progress-track { height:4px;background:var(--border);border-radius:2px;overflow:hidden; }
+  .quiz-progress-fill { height:100%;background:var(--green);border-radius:2px;transition:width 0.4s ease; }
+  .quiz-body { width:100%;max-width:420px;padding:1.25rem 1.5rem 2rem; }
+  .quiz-step { display:none; }
+  .quiz-step.active { display:block; }
+  .quiz-emoji { font-size:2.2rem;margin-bottom:0.6rem; }
+  .quiz-q { font-size:1.3rem;font-weight:700;color:var(--text-primary);margin-bottom:0.2rem;line-height:1.3; }
+  .quiz-hint { font-size:0.83rem;color:var(--text-muted);margin-bottom:1.25rem; }
+  .quiz-field { margin-bottom:0.9rem; }
+  .quiz-field label { display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem; }
+  .quiz-input { width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-md);font-size:1rem;font-family:inherit;background:var(--bg-primary);color:var(--text-primary);box-sizing:border-box;outline:none;transition:border-color 0.2s; }
+  .quiz-input:focus { border-color:var(--green); }
+  .quiz-cards { display:grid;gap:0.6rem;margin-bottom:1.25rem; }
+  .quiz-card { background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-md);padding:0.85rem 1rem;cursor:pointer;transition:border-color 0.2s,background 0.2s;display:flex;align-items:center;gap:0.75rem; }
+  .quiz-card:hover { border-color:var(--green); }
+  .quiz-card.selected { border-color:var(--green);background:rgba(34,197,94,0.08); }
+  .quiz-card-icon { font-size:1.4rem;flex-shrink:0; }
+  .quiz-card-title { font-weight:600;color:var(--text-primary);font-size:0.9rem; }
+  .quiz-card-desc { font-size:0.75rem;color:var(--text-muted); }
+  .quiz-checks { display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem; }
+  .quiz-check { display:flex;align-items:center;gap:0.75rem;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:0.75rem 1rem;cursor:pointer;transition:border-color 0.2s; }
+  .quiz-check.selected { border-color:var(--green);background:rgba(34,197,94,0.08); }
+  .quiz-check-box { width:18px;height:18px;border:2px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.7rem;font-weight:700;color:#fff;transition:all 0.2s; }
+  .quiz-check.selected .quiz-check-box { background:var(--green);border-color:var(--green); }
+  .quiz-check-label { font-size:0.88rem;color:var(--text-primary); }
+  .quiz-btn { width:100%;padding:0.9rem;background:var(--green);color:#fff;border:none;border-radius:var(--radius-md);font-size:0.97rem;font-weight:600;cursor:pointer;transition:background 0.2s; }
+  .quiz-btn:hover { background:var(--green-dark); }
+  .quiz-btn-back { background:transparent;color:var(--text-muted);font-size:0.83rem;margin-top:0.5rem;border:none;cursor:pointer;width:100%;text-align:center;padding:0.4rem; }
+  .quiz-result-header { text-align:center;margin-bottom:1.25rem; }
+  .quiz-result-name { font-size:1.2rem;font-weight:700;color:var(--text-primary); }
+  .quiz-result-sub { font-size:0.85rem;color:var(--text-muted);margin-top:0.2rem; }
+  .quiz-result-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:0.9rem; }
+  .quiz-result-cal { text-align:center;padding:0.25rem 0 0.75rem; }
+  .quiz-result-cal-num { font-size:3.5rem;font-weight:800;color:var(--green);line-height:1; }
+  .quiz-result-cal-label { font-size:0.82rem;color:var(--text-muted);margin-top:0.2rem; }
+  .quiz-result-stats { display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-top:0.5rem; }
+  .quiz-stat { background:var(--bg-primary);border-radius:var(--radius-md);padding:0.65rem;text-align:center; }
+  .quiz-stat-val { font-size:1.1rem;font-weight:700;color:var(--text-primary); }
+  .quiz-stat-lbl { font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:0.1rem; }
+  .quiz-result-goal { background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:var(--radius-md);padding:0.9rem 1rem;margin-bottom:1rem; }
+  .quiz-result-goal-text { font-size:0.88rem;color:var(--text-primary);line-height:1.5; }
+  .quiz-result-note { text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:0.9rem; }
+  .quiz-step-label { font-size:0.75rem;color:var(--text-muted);font-weight:500; }
+
   /* ── Dual-language content blocks ── */
   .en-only { display: none; }
   .lang-en .sl-only { display: none !important; }
@@ -2616,6 +2669,379 @@
 </div>
 
 <!-- ─── LICENSE GATE ─── -->
+<!-- ─── QUIZ FUNNEL ─── -->
+<div id="quiz-gate" class="hidden">
+  <div class="quiz-progress-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+      <span class="quiz-step-label" id="quiz-step-label">Korak 1 / 11</span>
+      <span class="quiz-step-label" id="quiz-step-pct">9%</span>
+    </div>
+    <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-prog" style="width:9%"></div></div>
+  </div>
+  <div class="quiz-body">
+
+    <!-- ═══ KORAK 1: Ime & Spol ═══ -->
+    <div class="quiz-step active" id="qstep-1">
+      <div class="quiz-emoji">👋</div>
+      <div class="quiz-q">Dobrodošel v Vitali!</div>
+      <div class="quiz-hint">Ustvari tvoj osebni wellness profil — traja ~2 minuti.</div>
+      <div class="quiz-field">
+        <label>Tvoje ime</label>
+        <input class="quiz-input" id="q-name" type="text" placeholder="npr. Ana" autocomplete="given-name">
+      </div>
+      <div class="quiz-field">
+        <label>Spol</label>
+        <div class="quiz-cards" style="grid-template-columns:1fr 1fr;">
+          <div class="quiz-card" onclick="qSelectCard(this,'gender','m')">
+            <span class="quiz-card-icon">👨</span><span class="quiz-card-title">Moški</span>
+          </div>
+          <div class="quiz-card" onclick="qSelectCard(this,'gender','f')">
+            <span class="quiz-card-icon">👩</span><span class="quiz-card-title">Ženska</span>
+          </div>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qNext(1)">Naprej →</button>
+    </div>
+
+    <!-- ═══ KORAK 2: Telesni podatki ═══ -->
+    <div class="quiz-step" id="qstep-2">
+      <div class="quiz-emoji">📏</div>
+      <div class="quiz-q">Telesni podatki</div>
+      <div class="quiz-hint">Za natančen izračun kalorij in BMI.</div>
+      <div class="quiz-field">
+        <label>Starost (leta)</label>
+        <input class="quiz-input" id="q-age" type="number" placeholder="npr. 28" min="16" max="99">
+      </div>
+      <div class="quiz-field">
+        <label>Višina (cm)</label>
+        <input class="quiz-input" id="q-height" type="number" placeholder="npr. 175" min="130" max="230">
+      </div>
+      <div class="quiz-field">
+        <label>Trenutna teža (kg)</label>
+        <input class="quiz-input" id="q-weight" type="number" placeholder="npr. 80" min="30" max="300">
+      </div>
+      <div class="quiz-field">
+        <label>Ciljna teža (kg) <span style="font-weight:400;text-transform:none;color:var(--text-muted)">— neobvezno</span></label>
+        <input class="quiz-input" id="q-goal-weight" type="number" placeholder="npr. 72" min="30" max="300">
+      </div>
+      <button class="quiz-btn" onclick="qNext(2)">Naprej →</button>
+      <button class="quiz-btn-back" onclick="qBack(2)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ KORAK 3: Glavni cilj ═══ -->
+    <div class="quiz-step" id="qstep-3">
+      <div class="quiz-emoji">🎯</div>
+      <div class="quiz-q">Kaj je tvoj glavni cilj?</div>
+      <div class="quiz-hint">Prilagodimo tvoj kalorični in vadbeni plan.</div>
+      <div class="quiz-cards">
+        <div class="quiz-card" onclick="qSelectCard(this,'goal','lose')">
+          <span class="quiz-card-icon">🔥</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Izguba teže</div><div class="quiz-card-desc">Zmanjšati telesno maščobo</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'goal','maintain')">
+          <span class="quiz-card-icon">⚖️</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Vzdrževanje teže</div><div class="quiz-card-desc">Ohraniti trenutno telesno težo</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'goal','gain')">
+          <span class="quiz-card-icon">💪</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Pridobivanje mišic</div><div class="quiz-card-desc">Povečati mišično maso in moč</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'goal','fitness')">
+          <span class="quiz-card-icon">🏃</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Splošna kondicija</div><div class="quiz-card-desc">Boljša vzdržljivost in počutje</div></div>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qNext(3)">Naprej →</button>
+      <button class="quiz-btn-back" onclick="qBack(3)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ KORAK 4: Aktivnost ═══ -->
+    <div class="quiz-step" id="qstep-4">
+      <div class="quiz-emoji">🏃</div>
+      <div class="quiz-q">Kako aktiven si trenutno?</div>
+      <div class="quiz-hint">Povprečno gibanje v tipičnem tednu.</div>
+      <div class="quiz-cards">
+        <div class="quiz-card" onclick="qSelectCard(this,'activity','1.2')">
+          <span class="quiz-card-icon">🛋️</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Sedeč način</div><div class="quiz-card-desc">Pisarniško delo, zelo malo gibanja</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'activity','1.375')">
+          <span class="quiz-card-icon">🚶</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Rahlo aktiven</div><div class="quiz-card-desc">1–2 treningi tedensko, hoja</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'activity','1.55')">
+          <span class="quiz-card-icon">🏋️</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Zmerno aktiven</div><div class="quiz-card-desc">3–4 treningi tedensko</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'activity','1.725')">
+          <span class="quiz-card-icon">🏆</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Zelo aktiven</div><div class="quiz-card-desc">5–6 treningov tedensko</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'activity','1.9')">
+          <span class="quiz-card-icon">⚡</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Profesionalni nivo</div><div class="quiz-card-desc">Dnevni intenzivni treningi</div></div>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qNext(4)">Naprej →</button>
+      <button class="quiz-btn-back" onclick="qBack(4)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ KORAK 5: Izkušnje ═══ -->
+    <div class="quiz-step" id="qstep-5">
+      <div class="quiz-emoji">🎓</div>
+      <div class="quiz-q">Kakšne so tvoje izkušnje?</div>
+      <div class="quiz-hint">S treningom in zdravim življenjskim slogom.</div>
+      <div class="quiz-cards">
+        <div class="quiz-card" onclick="qSelectCard(this,'experience','beginner')">
+          <span class="quiz-card-icon">🌱</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Začetnik</div><div class="quiz-card-desc">Manj kot 6 mesecev rednega treninga</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'experience','intermediate')">
+          <span class="quiz-card-icon">📈</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Vmesni nivo</div><div class="quiz-card-desc">1–3 leta rednega treninga</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'experience','advanced')">
+          <span class="quiz-card-icon">🏅</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Napreden</div><div class="quiz-card-desc">3+ leta z jasnimi cilji</div></div>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qNext(5)">Naprej →</button>
+      <button class="quiz-btn-back" onclick="qBack(5)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ KORAK 6: Preference vadbe ═══ -->
+    <div class="quiz-step" id="qstep-6">
+      <div class="quiz-emoji">🏅</div>
+      <div class="quiz-q">Katere vrste vadbe ti ustrezajo?</div>
+      <div class="quiz-hint">Izberi vse kar te zanima (večkratna izbira).</div>
+      <div class="quiz-checks" id="q-workout-prefs">
+        <div class="quiz-check" onclick="qToggleMulti(this,'workoutPrefs','cardio')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🏃 Kardio (tek, kolesarjenje, plavanje)</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'workoutPrefs','weights')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🏋️ Dviganje uteži / moč</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'workoutPrefs','hiit')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">⚡ HIIT / intervalni trening</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'workoutPrefs','yoga')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🧘 Joga / pilates</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'workoutPrefs','walking')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🚶 Hoja / planinarjenje</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'workoutPrefs','sport')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">⚽ Ekipni šport</span>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qNext(6)">Naprej →</button>
+      <button class="quiz-btn-back" onclick="qBack(6)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ KORAK 7: Prehrana ═══ -->
+    <div class="quiz-step" id="qstep-7">
+      <div class="quiz-emoji">🥗</div>
+      <div class="quiz-q">Prehranske navade in omejitve</div>
+      <div class="quiz-hint">Izberi vse kar velja zate.</div>
+      <div class="quiz-checks" id="q-diet-prefs">
+        <div class="quiz-check selected" onclick="qToggleMulti(this,'diet','none')">
+          <div class="quiz-check-box">✓</div><span class="quiz-check-label">🍽️ Brez posebnih omejitev</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'diet','vegetarian')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🥦 Vegetarijanec</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'diet','vegan')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🌱 Vegan</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'diet','gluten')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🌾 Brez glutena</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'diet','lactose')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🥛 Brez laktoze</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleMulti(this,'diet','lowcarb')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🥩 Low carb / keto</span>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qNext(7)">Naprej →</button>
+      <button class="quiz-btn-back" onclick="qBack(7)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ KORAK 8: Spanje ═══ -->
+    <div class="quiz-step" id="qstep-8">
+      <div class="quiz-emoji">😴</div>
+      <div class="quiz-q">Koliko spiš povprečno na noč?</div>
+      <div class="quiz-hint">Spanje bistveno vpliva na regeneracijo in metabolizem.</div>
+      <div class="quiz-cards">
+        <div class="quiz-card" onclick="qSelectCard(this,'sleep','under6')">
+          <span class="quiz-card-icon">😩</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Manj kot 6 ur</div><div class="quiz-card-desc">Pogosto premalo spanja</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'sleep','6to7')">
+          <span class="quiz-card-icon">😐</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">6–7 ur</div><div class="quiz-card-desc">Pod priporočenim</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'sleep','7to8')">
+          <span class="quiz-card-icon">😊</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">7–8 ur</div><div class="quiz-card-desc">Priporočena količina</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'sleep','over8')">
+          <span class="quiz-card-icon">😴</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">8+ ur</div><div class="quiz-card-desc">Dovolj počitka</div></div>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qNext(8)">Naprej →</button>
+      <button class="quiz-btn-back" onclick="qBack(8)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ KORAK 9: Stres ═══ -->
+    <div class="quiz-step" id="qstep-9">
+      <div class="quiz-emoji">🧘</div>
+      <div class="quiz-q">Kakšen je tvoj povprečni stres?</div>
+      <div class="quiz-hint">Stres vpliva na kortizol, apetit in regeneracijo.</div>
+      <div class="quiz-cards">
+        <div class="quiz-card" onclick="qSelectCard(this,'stress','low')">
+          <span class="quiz-card-icon">🟢</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Nizek stres</div><div class="quiz-card-desc">Večinoma sproščen(a) in miren(a)</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'stress','medium')">
+          <span class="quiz-card-icon">🟡</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Zmeren stres</div><div class="quiz-card-desc">Občasno obremenjen(a)</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'stress','high')">
+          <span class="quiz-card-icon">🟠</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Visok stres</div><div class="quiz-card-desc">Pogosto pod pritiskom</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'stress','very')">
+          <span class="quiz-card-icon">🔴</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Zelo visok stres</div><div class="quiz-card-desc">Kronično obremenjen(a)</div></div>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qNext(9)">Naprej →</button>
+      <button class="quiz-btn-back" onclick="qBack(9)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ KORAK 10: Voda ═══ -->
+    <div class="quiz-step" id="qstep-10">
+      <div class="quiz-emoji">💧</div>
+      <div class="quiz-q">Koliko vode spiješ na dan?</div>
+      <div class="quiz-hint">Hidracija je ključna za metabolizem in energijo.</div>
+      <div class="quiz-cards">
+        <div class="quiz-card" onclick="qSelectCard(this,'water','under1')">
+          <span class="quiz-card-icon">🏜️</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">Manj kot 1 L</div><div class="quiz-card-desc">Premalo hidratacije</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'water','1to2')">
+          <span class="quiz-card-icon">💧</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">1–2 L</div><div class="quiz-card-desc">Spodnja meja priporočenega</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'water','2to3')">
+          <span class="quiz-card-icon">💦</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">2–3 L</div><div class="quiz-card-desc">Dobra hidracija</div></div>
+        </div>
+        <div class="quiz-card" onclick="qSelectCard(this,'water','over3')">
+          <span class="quiz-card-icon">🌊</span>
+          <div class="quiz-card-text"><div class="quiz-card-title">3+ L</div><div class="quiz-card-desc">Odlična hidracija</div></div>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qNext(10)">Naprej →</button>
+      <button class="quiz-btn-back" onclick="qBack(10)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ KORAK 11: Poškodbe ═══ -->
+    <div class="quiz-step" id="qstep-11">
+      <div class="quiz-emoji">🏥</div>
+      <div class="quiz-q">Poškodbe in zdravstvene omejitve</div>
+      <div class="quiz-hint">Izberi vse kar velja zate — prilagodimo vadbo in priporočila.</div>
+      <div class="quiz-checks" id="q-injuries">
+        <div class="quiz-check selected" onclick="qToggleInjury(this,'brez poškodb')">
+          <div class="quiz-check-box">✓</div><span class="quiz-check-label">✅ Brez poškodb</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'koleno')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🦵 Koleno</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'hrbet')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🔙 Hrbet / hrbtenica</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'rama')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">💪 Rama</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'gleženj')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🦶 Gleženj</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'stopalo')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🦶 Stopalo</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'kolk')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🦴 Kolk</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'komolec')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🎾 Komolec</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'vrat')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🧠 Vrat / tilnik</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'zapestje')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">✋ Zapestje</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'golen')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🦿 Golen</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'misica')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">💪 Nateg mišice</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'prepona')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">⚽ Prepona &amp; dimlje</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'trebuh')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">💪 Trebušne mišice</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'srce')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">❤️ Srčne težave</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'dihala')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🫁 Dihalne težave</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'sladkorna')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">💉 Sladkorna bolezen</span>
+        </div>
+        <div class="quiz-check" onclick="qToggleInjury(this,'mozgani')">
+          <div class="quiz-check-box"></div><span class="quiz-check-label">🧠 Pretres možganov</span>
+        </div>
+      </div>
+      <button class="quiz-btn" onclick="qShowResults()">Prikaži moj plan →</button>
+      <button class="quiz-btn-back" onclick="qBack(11)">← Nazaj</button>
+    </div>
+
+    <!-- ═══ REZULTATI ═══ -->
+    <div class="quiz-step" id="qstep-results">
+      <div class="quiz-result-header">
+        <div class="quiz-emoji">✨</div>
+        <div class="quiz-result-name" id="q-res-name">Tvoj osebni plan</div>
+        <div class="quiz-result-sub" id="q-res-sub">Pripravljeno posebej zate</div>
+      </div>
+      <div class="quiz-result-card">
+        <div class="quiz-result-cal">
+          <div class="quiz-result-cal-num" id="q-res-kcal">—</div>
+          <div class="quiz-result-cal-label">kcal na dan</div>
+        </div>
+        <div class="quiz-result-stats">
+          <div class="quiz-stat"><div class="quiz-stat-val" id="q-res-bmi">—</div><div class="quiz-stat-lbl">BMI</div></div>
+          <div class="quiz-stat"><div class="quiz-stat-val" id="q-res-tdee">—</div><div class="quiz-stat-lbl">Vzdrž. kcal</div></div>
+          <div class="quiz-stat"><div class="quiz-stat-val" id="q-res-goal-badge">—</div><div class="quiz-stat-lbl">Cilj</div></div>
+        </div>
+      </div>
+      <div class="quiz-result-goal" id="q-res-goal-card">
+        <div class="quiz-result-goal-text" id="q-res-goal-desc">—</div>
+      </div>
+      <div id="q-res-warnings" style="margin-bottom:0.9rem;"></div>
+      <button class="quiz-btn" onclick="qProceedToPayment()">Začni z Vitali — €4.99/mesec →</button>
+      <div class="quiz-result-note">Odkleni celoten personaliziran plan z naročnino</div>
+    </div>
+
+  </div>
+</div>
+
 <div id="license-gate" class="hidden">
   <div class="lic-logo">🌿</div>
   <div class="lic-title">Vitali</div>
@@ -16905,6 +17331,212 @@
     navigator.serviceWorker.register("sw.js").catch(function(){});
   }
 
+  // ── QUIZ FUNNEL ──────────────────────────────────────────────────
+  var _qData = {
+    name:'', gender:'', age:0, height:0, weight:0, goalWeight:0,
+    goal:'', activity:null, experience:'',
+    workoutPrefs:[], diet:[], sleep:'', stress:'', water:'',
+    injuries:[]
+  };
+  var _qTotalSteps = 11;
+
+  function showQuizGate() {
+    var q = document.getElementById("quiz-gate");
+    if (q) q.classList.remove("hidden");
+  }
+
+  function qSelectCard(el, field, val) {
+    var cards = el.parentElement.querySelectorAll(".quiz-card");
+    cards.forEach(function(c) { c.classList.remove("selected"); });
+    el.classList.add("selected");
+    _qData[field] = val;
+  }
+
+  function qToggleMulti(el, field, val) {
+    if (el.classList.contains("selected")) {
+      el.classList.remove("selected");
+      el.querySelector(".quiz-check-box").textContent = "";
+      _qData[field] = (_qData[field] || []).filter(function(v){ return v !== val; });
+    } else {
+      el.classList.add("selected");
+      el.querySelector(".quiz-check-box").textContent = "✓";
+      if (!_qData[field]) _qData[field] = [];
+      if (_qData[field].indexOf(val) === -1) _qData[field].push(val);
+    }
+  }
+
+  function qToggleInjury(el, val) {
+    var allChecks = document.querySelectorAll("#q-injuries .quiz-check");
+    var noneEl    = allChecks[0];
+    if (val === 'brez poškodb') {
+      allChecks.forEach(function(c){ c.classList.remove("selected"); c.querySelector(".quiz-check-box").textContent = ""; });
+      el.classList.add("selected"); el.querySelector(".quiz-check-box").textContent = "✓";
+      _qData.injuries = [];
+    } else {
+      noneEl.classList.remove("selected"); noneEl.querySelector(".quiz-check-box").textContent = "";
+      if (el.classList.contains("selected")) {
+        el.classList.remove("selected"); el.querySelector(".quiz-check-box").textContent = "";
+        _qData.injuries = _qData.injuries.filter(function(v){ return v !== val; });
+      } else {
+        el.classList.add("selected"); el.querySelector(".quiz-check-box").textContent = "✓";
+        if (_qData.injuries.indexOf(val) === -1) _qData.injuries.push(val);
+      }
+    }
+  }
+
+  function qSetStep(n) {
+    document.querySelectorAll(".quiz-step").forEach(function(s){ s.classList.remove("active"); });
+    var isResults = (n === "results");
+    var pct = isResults ? 100 : Math.round((n / (_qTotalSteps + 1)) * 100);
+    var stepEl = isResults ? document.getElementById("qstep-results") : document.getElementById("qstep-" + n);
+    if (stepEl) stepEl.classList.add("active");
+    var pb = document.getElementById("quiz-prog");
+    if (pb) pb.style.width = pct + "%";
+    var lbl = document.getElementById("quiz-step-label");
+    var pctEl = document.getElementById("quiz-step-pct");
+    if (lbl) lbl.textContent = isResults ? "Tvoj plan" : "Korak " + n + " / " + _qTotalSteps;
+    if (pctEl) pctEl.textContent = pct + "%";
+    var gate = document.getElementById("quiz-gate");
+    if (gate) gate.scrollTop = 0;
+  }
+
+  function qNext(step) {
+    if (step === 1) {
+      var name = (document.getElementById("q-name").value || "").trim();
+      if (!name) { document.getElementById("q-name").focus(); return; }
+      if (!_qData.gender) { alert("Prosimo izberi spol."); return; }
+      _qData.name = name; qSetStep(2);
+    } else if (step === 2) {
+      var age = parseInt(document.getElementById("q-age").value, 10);
+      var h   = parseInt(document.getElementById("q-height").value, 10);
+      var w   = parseFloat(document.getElementById("q-weight").value);
+      var gw  = parseFloat(document.getElementById("q-goal-weight").value) || 0;
+      if (!age || age < 16 || age > 99) { document.getElementById("q-age").focus(); return; }
+      if (!h || h < 130 || h > 230)    { document.getElementById("q-height").focus(); return; }
+      if (!w || w < 30  || w > 300)    { document.getElementById("q-weight").focus(); return; }
+      _qData.age = age; _qData.height = h; _qData.weight = w; _qData.goalWeight = gw;
+      qSetStep(3);
+    } else if (step === 3) {
+      if (!_qData.goal) { alert("Prosimo izberi cilj."); return; }
+      qSetStep(4);
+    } else if (step === 4) {
+      if (!_qData.activity) { alert("Prosimo izberi raven aktivnosti."); return; }
+      qSetStep(5);
+    } else if (step === 5) {
+      if (!_qData.experience) { alert("Prosimo izberi raven izkušenj."); return; }
+      qSetStep(6);
+    } else if (step === 6) {
+      qSetStep(7);
+    } else if (step === 7) {
+      qSetStep(8);
+    } else if (step === 8) {
+      if (!_qData.sleep) { alert("Prosimo izberi spalne navade."); return; }
+      qSetStep(9);
+    } else if (step === 9) {
+      if (!_qData.stress) { alert("Prosimo izberi raven stresa."); return; }
+      qSetStep(10);
+    } else if (step === 10) {
+      if (!_qData.water) { alert("Prosimo izberi vnos vode."); return; }
+      qSetStep(11);
+    }
+  }
+
+  function qBack(step) { qSetStep(step - 1); }
+
+  function qCalcCalories() {
+    var w = _qData.weight, h = _qData.height, a = _qData.age;
+    var bmr = _qData.gender === 'm'
+      ? (10*w + 6.25*h - 5*a + 5)
+      : (10*w + 6.25*h - 5*a - 161);
+    var act = parseFloat(_qData.activity) || 1.375;
+    var tdee = bmr * act;
+    var adj = _qData.goal === 'lose' ? -500 : _qData.goal === 'gain' ? 300 : 0;
+    return { tdee: Math.round(tdee), target: Math.round(tdee + adj) };
+  }
+
+  function qShowResults() {
+    var cal  = qCalcCalories();
+    var bmiH = _qData.height / 100;
+    var bmiN = _qData.weight / (bmiH * bmiH);
+    var bmi  = bmiN.toFixed(1);
+    var bmiCat = bmiN < 18.5 ? "Podhranjenost" : bmiN < 25 ? "Normalna" : bmiN < 30 ? "Prekomerna" : "Debelost";
+
+    var goalLabels = { lose:"🔥 Hujšanje", maintain:"⚖️ Vzdrž.", gain:"💪 Mišice", fitness:"🏃 Kondicija" };
+    var goalDescs  = {
+      lose:    "S " + cal.target + " kcal/dan boš izgubil(a) cca. 0,5 kg tedensko. Vzdrževalni vnos: " + cal.tdee + " kcal.",
+      maintain:"S " + cal.target + " kcal/dan boš ohranil(a) svojo trenutno težo.",
+      gain:    "S " + cal.target + " kcal/dan boš postopno pridobival(a) mišično maso. Vzdrževalni vnos: " + cal.tdee + " kcal.",
+      fitness: "S " + cal.target + " kcal/dan in redno vadbo boš opazil(a) izboljšanje kondicije."
+    };
+
+    // Build warnings based on profile
+    var warnings = [];
+    if (_qData.sleep === 'under6') warnings.push("😴 Premalo spanja znižuje metabolizem — cilj je 7–8 ur.");
+    if (_qData.stress === 'very' || _qData.stress === 'high') warnings.push("🧘 Visok stres povečuje kortizol — priporočamo meditacijo in okrevanje.");
+    if (_qData.water === 'under1') warnings.push("💧 Premalo vode — priporočamo vsaj 2 L na dan za boljši metabolizem.");
+    if (_qData.injuries.length > 0 && _qData.injuries[0] !== 'brez poškodb') {
+      warnings.push("🏥 Upoštevali smo tvoje poškodbe — Vitali ima sekcijo za rehabilitacijo.");
+    }
+    if (_qData.goalWeight && _qData.goalWeight < _qData.weight * 0.6) {
+      warnings.push("⚠️ Ciljeva teža je zelo nizka — priporočamo postopen pristop.");
+    }
+
+    document.getElementById("q-res-name").textContent  = "Pozdravljen(a), " + _qData.name + "! 👋";
+    document.getElementById("q-res-sub").textContent   = "Tvoj 100% personaliziran zdravstveni plan.";
+    document.getElementById("q-res-kcal").textContent  = cal.target;
+    document.getElementById("q-res-bmi").textContent   = bmi;
+    document.getElementById("q-res-tdee").textContent  = cal.tdee;
+    document.getElementById("q-res-goal-badge").textContent = goalLabels[_qData.goal] || "—";
+    document.getElementById("q-res-goal-desc").textContent  = goalDescs[_qData.goal]  || "";
+
+    var warnEl = document.getElementById("q-res-warnings");
+    if (warnEl) {
+      warnEl.innerHTML = warnings.map(function(w){
+        return '<div style="background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.3);border-radius:8px;padding:0.65rem 0.85rem;margin-bottom:0.5rem;font-size:0.82rem;color:var(--text-primary);">' + w + '</div>';
+      }).join("");
+    }
+
+    localStorage.setItem("zz_quiz_done", "1");
+    localStorage.setItem("zz_quiz_name", _qData.name);
+    localStorage.setItem("zz_quiz_kcal", cal.target.toString());
+    qSetStep("results");
+  }
+
+  function qProceedToPayment() {
+    var q = document.getElementById("quiz-gate");
+    if (q) q.classList.add("hidden");
+    showLicenseGate();
+  }
+
+  function _applyQuizDataToProfile() {
+    // After payment: pre-fill profile with quiz answers so onboarding is skipped
+    var name  = localStorage.getItem("zz_quiz_name") || "";
+    var kcal  = parseInt(localStorage.getItem("zz_quiz_kcal") || "0", 10);
+    if (!_qData.age && name) {
+      // Reload from localStorage if quiz was in a previous session
+      // (data already saved to state via zz_quiz_name / kcal)
+    }
+    if (_qData.age && _qData.height && _qData.weight) {
+      state.profile = state.profile || {};
+      state.userName             = _qData.name || name;
+      state.profile.userName     = state.userName;
+      state.profile.age          = _qData.age;
+      state.profile.height       = _qData.height;
+      state.profile.weight       = _qData.weight;
+      state.profile.sex          = _qData.gender || "m";
+      state.profile.activityLevel= parseFloat(_qData.activity || 1.375);
+      state.profile.goal         = _qData.goal === "lose" ? "hujšanje"
+                                 : _qData.goal === "gain" ? "mišična masa"
+                                 : "splošna kondicija";
+      state.profile.injuries     = (_qData.injuries && _qData.injuries.length) ? _qData.injuries : ["brez poškodb"];
+      state.profile.dietaryRestrictions = (_qData.diet && _qData.diet.length && _qData.diet[0] !== 'none') ? _qData.diet : ["brez omejitev"];
+      if (kcal) state.kcalGoal   = kcal;
+      state.profile.onboardingDone = true;
+      saveState();
+      localStorage.setItem("zz_onb_done", "1");
+    }
+  }
+
   // ─── SUBSCRIPTION SYSTEM ─────────────────────────────────────────
   // Replace WORKER_URL with your Cloudflare Worker URL after deploy
   var _WORKER_URL = "https://vitali-auth.david-730.workers.dev";
@@ -16945,6 +17577,7 @@
       if (data.active) {
         localStorage.setItem("zz_license", email);
         localStorage.setItem("zz_license_ts", Date.now().toString());
+        _applyQuizDataToProfile();
         var gate = document.getElementById("license-gate");
         if (gate) gate.classList.add("hidden");
         _licStartup();
@@ -16961,6 +17594,7 @@
       var cachedTs = parseInt(localStorage.getItem("zz_license_ts") || "0", 10);
       var sevenDays = 7 * 24 * 60 * 60 * 1000;
       if (cached && (Date.now() - cachedTs) < sevenDays) {
+        _applyQuizDataToProfile();
         var gate = document.getElementById("license-gate");
         if (gate) gate.classList.add("hidden");
         _licStartup();
@@ -17015,7 +17649,13 @@
       var savedTs    = parseInt(localStorage.getItem("zz_license_ts") || "0", 10);
       var sevenDays  = 7 * 24 * 60 * 60 * 1000;
       if (!savedEmail || (Date.now() - savedTs) > sevenDays) {
-        showLicenseGate();
+        // Show quiz for new users, license gate for returning (quiz already done)
+        var quizDone = localStorage.getItem("zz_quiz_done");
+        if (quizDone) {
+          showLicenseGate();
+        } else {
+          showQuizGate();
+        }
         return;
       }
     }

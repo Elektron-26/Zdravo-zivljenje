@@ -1,7 +1,7 @@
 // Service Worker — Vitali PWA
-// Version: 1.19.0
+// Version: 1.20.0
 
-const CACHE_NAME = "vitali-v19";
+const CACHE_NAME = "vitali-v20";
 const ASSETS = [
   "./",
   "./index.html",
