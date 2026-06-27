@@ -10,6 +10,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Vitali" />
   <title>Vitali</title>
+  <meta property="og:title" content="Vitali — Wellness Tracker" />
+  <meta property="og:description" content="Tvoja osebna aplikacija za prehrano, treninge, spanje in počutje." />
+  <meta property="og:image" content="https://elektron-26.github.io/vitali/icon-512.png" />
+  <meta property="og:url" content="https://elektron-26.github.io/vitali/" />
+  <meta property="og:type" content="website" />
   <link rel="manifest" href="manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1837,8 +1842,8 @@
   .lic-error { font-size:0.8rem;color:#f44336;margin-top:0.4rem;min-height:1.1rem; }
   .lic-btn { width:100%;margin-top:1rem;padding:0.85rem;background:#4CAF50;color:#fff;border:none;border-radius:var(--radius-md);font-size:0.95rem;font-weight:600;cursor:pointer;transition:background 0.2s; }
   .lic-btn:hover { background:#388E3C; }
-  .lic-buy { display:block;text-align:center;margin-top:1.25rem;font-size:0.82rem;color:rgba(255,255,255,0.40); }
-  .lic-buy a { color:#4CAF50;text-decoration:none;font-weight:600; }
+  .lic-no-account-btn { display:block;width:100%;max-width:360px;margin-top:1rem;padding:0.75rem;background:transparent;color:rgba(255,255,255,0.55);border:1.5px solid rgba(255,255,255,0.18);border-radius:var(--radius-md);font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:inherit; }
+  .lic-no-account-btn:hover { color:#4CAF50;border-color:#4CAF50; }
 
   /* ── Quiz Funnel ── */
   #quiz-gate {
@@ -3091,7 +3096,7 @@
       <span id="lic-btn-text">Continue →</span>
     </button>
   </div>
-  <span class="lic-buy">No subscription yet? <a href="https://buy.stripe.com/test_PLACEHOLDER" target="_blank" id="lic-buy-link">Get Vitali — €4.99/month →</a></span>
+  <button class="lic-no-account-btn" onclick="licGoToQuiz()">Nimam še računa →</button>
 </div>
 
 <!-- ─── LANGUAGE SELECT OVERLAY ─── -->
@@ -5604,6 +5609,10 @@
   <button class="bottom-nav-item" data-screen="stanje">
     <span class="b-icon">🎯</span>
     <span class="b-label" data-i18n="bnav_stanje">Stanje</span>
+  </button>
+  <button class="bottom-nav-item" data-screen="info">
+    <span class="b-icon">ℹ️</span>
+    <span class="b-label" data-i18n="bnav_info">Info</span>
   </button>
 </nav>
 
@@ -17712,35 +17721,30 @@
     else navigate("dashboard");
   }
 
+  // ─── "Nimam še računa" → pokaži quiz/lang gate ───────────────────
+  function licGoToQuiz() {
+    var gate = document.getElementById("license-gate");
+    if (gate) gate.classList.add("hidden");
+    var langChosen = localStorage.getItem("zz_lang");
+    if (langChosen) {
+      _qLang = langChosen;
+      document.body.classList.toggle("lang-en", langChosen === "en");
+      showQuizGate();
+    } else {
+      showLangGate();
+    }
+  }
+
   // ─── STARTUP ─────────────────────────────────────────────────────
   (function() {
     loadState();
-    // Check subscription
-    var _LIC_BYPASS = false;
-    if (!_LIC_BYPASS) {
-      var savedEmail = localStorage.getItem("zz_license");
-      var savedTs    = parseInt(localStorage.getItem("zz_license_ts") || "0", 10);
-      var sevenDays  = 7 * 24 * 60 * 60 * 1000;
-      if (!savedEmail || (Date.now() - savedTs) > sevenDays) {
-        var quizDone = localStorage.getItem("zz_quiz_done");
-        if (quizDone) {
-          // Quiz already done — go straight to license gate
-          showLicenseGate();
-        } else {
-          // New user — check if language already chosen
-          var langChosen = localStorage.getItem("zz_lang");
-          if (langChosen) {
-            // Language already selected — go straight to quiz
-            _qLang = langChosen;
-            document.body.classList.toggle("lang-en", langChosen === "en");
-            showQuizGate();
-          } else {
-            // First time — show language selection
-            showLangGate();
-          }
-        }
-        return;
-      }
+    var savedEmail = localStorage.getItem("zz_license");
+    var savedTs    = parseInt(localStorage.getItem("zz_license_ts") || "0", 10);
+    var sevenDays  = 7 * 24 * 60 * 60 * 1000;
+    if (!savedEmail || (Date.now() - savedTs) > sevenDays) {
+      // Vedno pokaži login screen najprej
+      showLicenseGate();
+      return;
     }
     _licStartup();
   })();
