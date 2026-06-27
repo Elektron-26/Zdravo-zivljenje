@@ -17387,7 +17387,7 @@
 
   function showLangGate() {
     var lg = document.getElementById("lang-gate");
-    if (lg) lg.classList.remove("hidden");
+    if (lg) { lg.classList.remove("hidden"); lg.style.display = "flex"; }
   }
 
   function showQuizGate() {
@@ -17756,17 +17756,14 @@
     var savedTs    = parseInt(localStorage.getItem("zz_license_ts") || "0", 10);
     var sevenDays  = 7 * 24 * 60 * 60 * 1000;
     if (!savedEmail || (Date.now() - savedTs) > sevenDays) {
+      // Vedno pokaži izbiro jezika najprej (za nepriaavljene)
       var langChosen = localStorage.getItem("zz_lang");
-      if (!langChosen) {
-        // Prvič — najprej izbira jezika
-        showLangGate();
-      } else {
-        // Jezik že izbran — pokaži login
+      if (langChosen) {
         _qLang = langChosen;
         document.body.classList.toggle("lang-en", langChosen === "en");
         _translateLicGate(langChosen);
-        showLicenseGate();
       }
+      showLangGate();
       return;
     }
     _licStartup();
