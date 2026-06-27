@@ -17398,6 +17398,16 @@
     qSetStep(1);
   }
 
+  function _translateLicGate(lang) {
+    var isEN = lang === "en";
+    var btn = document.querySelector(".lic-no-account-btn");
+    if (btn) btn.textContent = isEN ? "I don't have an account →" : "Nimam še računa →";
+    var sub = document.querySelector(".lic-sub");
+    if (sub) sub.innerHTML = isEN
+      ? "Sign in with your subscription email.<br><span style=\"font-size:0.8rem;\">Your personal wellness tracker.</span>"
+      : "Vpišite vaš naročniški e-mail.<br><span style=\"font-size:0.8rem;\">Vaš osebni wellness sledilnik.</span>";
+  }
+
   function qSelectLang(lang) {
     _qLang = lang;
     localStorage.setItem("zz_lang", lang);
@@ -17414,7 +17424,11 @@
       var el = document.getElementById(p[0]);
       if (el) el.placeholder = p[1];
     });
-    showQuizGate();
+    // Po izbiri jezika → pokaži license gate (ne quiz)
+    var lg = document.getElementById("lang-gate");
+    if (lg) lg.classList.add("hidden");
+    _translateLicGate(lang);
+    showLicenseGate();
   }
 
   function qSelectCard(el, field, val) {
@@ -17742,8 +17756,17 @@
     var savedTs    = parseInt(localStorage.getItem("zz_license_ts") || "0", 10);
     var sevenDays  = 7 * 24 * 60 * 60 * 1000;
     if (!savedEmail || (Date.now() - savedTs) > sevenDays) {
-      // Vedno pokaži login screen najprej
-      showLicenseGate();
+      var langChosen = localStorage.getItem("zz_lang");
+      if (!langChosen) {
+        // Prvič — najprej izbira jezika
+        showLangGate();
+      } else {
+        // Jezik že izbran — pokaži login
+        _qLang = langChosen;
+        document.body.classList.toggle("lang-en", langChosen === "en");
+        _translateLicGate(langChosen);
+        showLicenseGate();
+      }
       return;
     }
     _licStartup();
