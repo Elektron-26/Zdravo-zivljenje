@@ -17283,28 +17283,218 @@
 
   // ─── SCANNER ──────────────────────────────────────────────────────
   var _scannerTarget = null;
+  var _scannerDetectInterval = null;
+  var _srProductBase = null;
+  var _scannerBusy = false;
+
   function openScanner(target) {
     _scannerTarget = target;
+    _scannerBusy = false;
     var ov = document.getElementById("scanner-overlay");
     if (ov) ov.classList.add("open");
-    // Attempt camera
-    var video = document.getElementById("scanner-video");
-    if (video && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-        .then(function(stream) { video.srcObject = stream; })
-        .catch(function() { closeScanner(); showToast("Kamera ni dostopna / Camera not available"); });
+    _srHideResult();
+
+    // Load ZXing then start — ZXing manages camera internally
+    if (window._zxingLoaded) {
+      _startZXingScan();
     } else {
-      closeScanner();
-      showToast("Skener ni podprt / Scanner not supported");
+      var s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js";
+      s.onload = function() { window._zxingLoaded = true; _startZXingScan(); };
+      s.onerror = function() {
+        // ZXing failed to load — fallback to native BarcodeDetector + getUserMedia
+        _startNativeScanner();
+      };
+      document.head.appendChild(s);
     }
   }
+
+  function _startZXingScan() {
+    try {
+      var reader = new ZXing.BrowserMultiFormatReader();
+      window._zxingReader = reader;
+      var videoEl = document.getElementById("scanner-video");
+      // null = default back camera; videoEl receives the stream
+      reader.decodeFromVideoDevice(null, videoEl, function(result, err) {
+        if (result && !_scannerBusy) {
+          _scannerBusy = true;
+          _onBarcodeDetected(result.getText());
+        }
+      });
+    } catch(e) {
+      _startNativeScanner();
+    }
+  }
+
+  function _startNativeScanner() {
+    var video = document.getElementById("scanner-video");
+    if (!video || !navigator.mediaDevices) {
+      showToast("Skener ni podprt / Scanner not supported");
+      closeScanner();
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then(function(stream) {
+        video.srcObject = stream;
+        if (!("BarcodeDetector" in window)) {
+          showToast("Skener ni podprt v tem brskalniku / Use Chrome on Android");
+          return;
+        }
+        var detector;
+        try { detector = new BarcodeDetector({ formats: ["ean_13","ean_8","upc_a","upc_e","code_128"] }); }
+        catch(e) { detector = new BarcodeDetector(); }
+        // Wait for video to play before scanning
+        video.addEventListener("playing", function startDetect() {
+          video.removeEventListener("playing", startDetect);
+          var canvas = document.createElement("canvas");
+          var ctx = canvas.getContext("2d");
+          _scannerDetectInterval = setInterval(function() {
+            if (!video.srcObject || _scannerBusy) return;
+            if (video.videoWidth === 0) return;
+            canvas.width  = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            detector.detect(canvas).then(function(barcodes) {
+              if (barcodes.length > 0 && !_scannerBusy) {
+                _scannerBusy = true;
+                clearInterval(_scannerDetectInterval);
+                _onBarcodeDetected(barcodes[0].rawValue);
+              }
+            }).catch(function(){});
+          }, 400);
+        });
+      })
+      .catch(function() { closeScanner(); showToast("Kamera ni dostopna / Camera not available"); });
+  }
+
   function closeScanner() {
+    _scannerBusy = false;
+    if (_scannerDetectInterval) { clearInterval(_scannerDetectInterval); _scannerDetectInterval = null; }
+    if (window._zxingReader) { try { window._zxingReader.reset(); } catch(e){} window._zxingReader = null; }
     var ov = document.getElementById("scanner-overlay");
     if (ov) ov.classList.remove("open");
     var video = document.getElementById("scanner-video");
     if (video && video.srcObject) {
       video.srcObject.getTracks().forEach(function(t){ t.stop(); });
       video.srcObject = null;
+    }
+  }
+
+  function _onBarcodeDetected(barcode) {
+    var card = document.getElementById("scanner-result-card");
+    var loading = document.getElementById("sr-loading");
+    var content = document.getElementById("sr-content");
+    var error   = document.getElementById("sr-error");
+    if (card)    card.classList.add("show");
+    if (loading) loading.style.display = "";
+    if (content) content.style.display = "none";
+    if (error)   error.style.display   = "none";
+
+    fetch("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.status === 1 && data.product) {
+          var p = data.product;
+          var n = p.nutriments || {};
+          var kcalPer100 = n["energy-kcal_100g"] || n["energy-kcal"] || 0;
+          if (!kcalPer100 && n["energy_100g"]) kcalPer100 = n["energy_100g"] / 4.184;
+          _srProductBase = {
+            name:    p.product_name || p.product_name_en || ("EAN: " + barcode),
+            brand:   p.brands || "",
+            kcal:    Math.round(kcalPer100),
+            protein: parseFloat((n["proteins_100g"]       || 0).toFixed(1)),
+            carbs:   parseFloat((n["carbohydrates_100g"]  || 0).toFixed(1)),
+            fat:     parseFloat((n["fat_100g"]            || 0).toFixed(1))
+          };
+          _srShowProduct();
+        } else {
+          _srShowError("Produkt ni najden v bazi / Product not found in database\n(EAN: " + barcode + ")");
+        }
+      })
+      .catch(function() { _srShowError("Napaka pri iskanju. Preveri internet. / Search error. Check internet."); });
+  }
+
+  function _srShowProduct() {
+    var loading = document.getElementById("sr-loading");
+    var content = document.getElementById("sr-content");
+    var error   = document.getElementById("sr-error");
+    if (loading) loading.style.display = "none";
+    if (content) content.style.display = "";
+    if (error)   error.style.display   = "none";
+    var nameEl  = document.getElementById("sr-name");
+    var brandEl = document.getElementById("sr-brand");
+    if (nameEl)  nameEl.textContent  = _srProductBase.name;
+    if (brandEl) brandEl.textContent = _srProductBase.brand;
+    document.getElementById("sr-portion").value = 100;
+    srUpdatePortionMacros();
+  }
+
+  function _srShowError(msg) {
+    var loading = document.getElementById("sr-loading");
+    var content = document.getElementById("sr-content");
+    var error   = document.getElementById("sr-error");
+    var errMsg  = document.getElementById("sr-error-msg");
+    if (loading) loading.style.display = "none";
+    if (content) content.style.display = "none";
+    if (error)   error.style.display   = "";
+    if (errMsg)  errMsg.textContent     = msg;
+  }
+
+  function _srHideResult() {
+    var card = document.getElementById("scanner-result-card");
+    if (card) card.classList.remove("show");
+    _srProductBase = null;
+  }
+
+  function srUpdatePortionMacros() {
+    if (!_srProductBase) return;
+    var portion = parseFloat(document.getElementById("sr-portion").value) || 100;
+    var f = portion / 100;
+    document.getElementById("sr-kcal").textContent    = Math.round(_srProductBase.kcal * f);
+    document.getElementById("sr-protein").textContent = (_srProductBase.protein * f).toFixed(1) + "g";
+    document.getElementById("sr-carbs").textContent   = (_srProductBase.carbs   * f).toFixed(1) + "g";
+    document.getElementById("sr-fat").textContent     = (_srProductBase.fat     * f).toFixed(1) + "g";
+  }
+
+  function srAddToMeal() {
+    if (!_srProductBase) return;
+    var portion = parseFloat(document.getElementById("sr-portion").value) || 100;
+    var f = portion / 100;
+    var meal = {
+      id:      Date.now(),
+      name:    _srProductBase.name + (portion !== 100 ? " (" + portion + "g)" : ""),
+      kcal:    Math.round(_srProductBase.kcal * f),
+      protein: parseFloat((_srProductBase.protein * f).toFixed(1)),
+      carbs:   parseFloat((_srProductBase.carbs   * f).toFixed(1)),
+      fat:     parseFloat((_srProductBase.fat     * f).toFixed(1)),
+      type:    "prigrizek",
+      time:    new Date().toLocaleTimeString("sl-SI", { hour: "2-digit", minute: "2-digit" })
+    };
+    state.meals.push(meal);
+    saveState();
+    closeScanner();
+    showToast("✅ " + meal.name + " dodano / added");
+    renderMealLog();
+    updateMacroDash();
+  }
+
+  function srSendToCalc() {
+    if (!_srProductBase) return;
+    closeScanner();
+    switchScreen("kalkulator");
+    var fs = document.getElementById("foodSearch");
+    if (fs) { fs.value = _srProductBase.name; searchFoods(); }
+  }
+
+  function srRetry() {
+    _srHideResult();
+    if (_scannerDetectInterval) { clearInterval(_scannerDetectInterval); _scannerDetectInterval = null; }
+    var video = document.getElementById("scanner-video");
+    if (video && video.srcObject) {
+      _startBarcodeDetection(video);
+    } else {
+      closeScanner();
+      openScanner(_scannerTarget || "meal");
     }
   }
 
