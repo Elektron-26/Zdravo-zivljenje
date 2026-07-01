@@ -17783,104 +17783,58 @@
     var warnings = [];
     if (_qData.sleep === 'under6') warnings.push(isEN ? "😴 Too little sleep reduces metabolism — aim for 7–8 hours." : "😴 Premalo spanja znižuje metabolizem — cilj je 7–8 ur.");
     if (_qData.stress === 'very' || _qData.stress === 'high') warnings.push(isEN ? "🧘 High stress raises cortisol — we recommend meditation and recovery." : "🧘 Visok stres povečuje kortizol — priporočamo meditacijo in okrevanje.");
-    if (_qData.water === 'under1') warnings.push(isEN ? "💧 Too little water — aim for at least 2 L per day for better metabolism." : "💧 Premalo vode — priporočamo vsaj 2 L na dan za boljši metabolizem.");
-    if (_qData.injuries.length > 0 && _qData.injuries[0] !== 'brez poškodb') {
-      warnings.push(isEN ? "🏥 We've noted your injuries — Vitali has a rehabilitation section for you." : "🏥 Upoštevali smo tvoje poškodbe — Vitali ima sekcijo za rehabilitacijo.");
-    }
-    if (_qData.goalWeight && _qData.goalWeight < _qData.weight * 0.6) {
-      warnings.push(isEN ? "⚠️ Your goal weight is very low — we recommend a gradual approach." : "⚠️ Ciljeva teža je zelo nizka — priporočamo postopen pristop.");
-    }
+    if (_qData.water === 'under1') warnings.push(isEN ? "💧 Too little water can affect energy and metabolism — aim for 2L daily." : "💧 Premalo vode vpliva na energijo in metabolizem — cilj je 2L na dan.");
 
-    document.getElementById("q-res-name").textContent  = (isEN ? "Hello, " : "Pozdravljen(a), ") + _qData.name + "! 👋";
-    document.getElementById("q-res-sub").textContent   = isEN ? "Your 100% personalized health plan." : "Tvoj 100% personaliziran zdravstveni plan.";
-    document.getElementById("q-res-kcal").textContent  = cal.target;
-    document.getElementById("q-res-bmi").textContent   = bmi;
-    document.getElementById("q-res-tdee").textContent  = cal.tdee;
-    document.getElementById("q-res-goal-badge").textContent = goalLabels[_qData.goal] || "—";
-    document.getElementById("q-res-goal-desc").textContent  = goalDescs[_qData.goal]  || "";
+    // Update result elements
+    var nameEl = document.getElementById("q-res-name");
+    if (nameEl) nameEl.textContent = _qData.name ? (isEN ? _qData.name + "'s plan" : "Plan za " + _qData.name) : (isEN ? "Your plan" : "Tvoj plan");
+    var subEl2 = document.getElementById("q-res-sub");
+    if (subEl2) subEl2.textContent = isEN ? "Prepared just for you" : "Pripravljeno posebej zate";
+    var kcalEl = document.getElementById("q-res-kcal");
+    if (kcalEl) kcalEl.textContent = cal.target;
+    var bmiEl = document.getElementById("q-res-bmi");
+    if (bmiEl) bmiEl.textContent = bmi;
+    var tdeeEl = document.getElementById("q-res-tdee");
+    if (tdeeEl) tdeeEl.textContent = cal.tdee;
+    var goalBadge = document.getElementById("q-res-goal-badge");
+    if (goalBadge) goalBadge.textContent = goalLabels[_qData.goal] || "—";
+    var goalDescEl = document.getElementById("q-res-goal-desc");
+    if (goalDescEl) goalDescEl.textContent = goalDescs[_qData.goal] || "";
 
     var warnEl = document.getElementById("q-res-warnings");
     if (warnEl) {
-      warnEl.innerHTML = warnings.map(function(w){
-        return '<div style="background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.3);border-radius:8px;padding:0.65rem 0.85rem;margin-bottom:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.88);">' + w + '</div>';
-      }).join("");
+      warnEl.innerHTML = "";
+      warnings.forEach(function(w) {
+        var d = document.createElement("div");
+        d.style.cssText = "background:rgba(255,193,7,0.10);border:1px solid rgba(255,193,7,0.25);border-radius:8px;padding:0.6rem 0.9rem;margin-bottom:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.8);";
+        d.textContent = w;
+        warnEl.appendChild(d);
+      });
     }
 
-    localStorage.setItem("zz_quiz_done", "1");
-    localStorage.setItem("zz_quiz_name", _qData.name);
-    localStorage.setItem("zz_quiz_kcal", cal.target.toString());
     qSetStep("results");
   }
 
   function qProceedToPayment() {
-    var q = document.getElementById("quiz-gate");
-    if (q) q.classList.add("hidden");
-    showLicenseGate();
+    localStorage.setItem("zz_quiz_data", JSON.stringify(_qData));
+    window.open(_STRIPE_LINK, "_blank");
   }
 
-  function _applyQuizDataToProfile() {
-    // After payment: pre-fill profile with quiz answers so onboarding is skipped
-    var name  = localStorage.getItem("zz_quiz_name") || "";
-    var kcal  = parseInt(localStorage.getItem("zz_quiz_kcal") || "0", 10);
-    if (!_qData.age && name) {
-      // Reload from localStorage if quiz was in a previous session
-      // (data already saved to state via zz_quiz_name / kcal)
-    }
-    if (_qData.age && _qData.height && _qData.weight) {
-      state.profile = state.profile || {};
-      state.userName             = _qData.name || name;
-      state.profile.userName     = state.userName;
-      state.profile.age          = _qData.age;
-      state.profile.height       = _qData.height;
-      state.profile.weight       = _qData.weight;
-      state.profile.sex          = _qData.gender || "m";
-      state.profile.activityLevel= parseFloat(_qData.activity || 1.375);
-      state.profile.goal         = _qData.goal === "lose" ? "hujšanje"
-                                 : _qData.goal === "gain" ? "mišična masa"
-                                 : "splošna kondicija";
-      state.profile.injuries     = (_qData.injuries && _qData.injuries.length) ? _qData.injuries : ["brez poškodb"];
-      state.profile.dietaryRestrictions = (_qData.diet && _qData.diet.length && _qData.diet[0] !== 'none') ? _qData.diet : ["brez omejitev"];
-      if (kcal) state.kcalGoal   = kcal;
-      state.profile.onboardingDone = true;
-      saveState();
-      localStorage.setItem("zz_onb_done", "1");
-    }
-  }
-
-  // ─── SUBSCRIPTION SYSTEM ─────────────────────────────────────────
-  // Replace WORKER_URL with your Cloudflare Worker URL after deploy
-  var _WORKER_URL = "https://vitali-auth.david-730.workers.dev";
+  // ─── CLOUD SYNC ───────────────────────────────────────────────────
+  var _WORKER_URL  = "https://vitali-auth.david-730.workers.dev";
   var _STRIPE_LINK = "https://buy.stripe.com/9B67sKa7NeaJ7CM2acdby00";
   var _activeEmail = localStorage.getItem("zz_license") || null;
   var _syncTimer   = null;
 
-  // ── Cloud backup toggle (opt-in) ────────────────────────────────
   function toggleCloudBackup(cb) {
     if (cb.checked) {
-      // Show consent dialog before enabling
-      var ok = confirm(
-        "Cloud Backup — Consent\n\n" +
-        "By enabling this feature, your health data (meals, workouts, weight, sleep) " +
-        "will be securely stored on Cloudflare's servers linked to your email address.\n\n" +
-        "• Data is used only to sync across your devices\n" +
-        "• You can delete your cloud data at any time\n" +
-        "• This is optional — the app works fully without it\n\n" +
-        "Do you agree?"
-      );
-      if (!ok) {
-        cb.checked = false;
-        return;
-      }
+      var ok = confirm("Cloud Backup — Consent\n\nBy enabling this feature, your health data (meals, workouts, weight, sleep) will be securely stored on Cloudflare's servers linked to your email address.\n\n• Data is used only to sync across your devices\n• You can delete your cloud data at any time\n• This is optional — the app works fully without it\n\nDo you agree?");
+      if (!ok) { cb.checked = false; return; }
       localStorage.setItem("zz_cloud_backup", "1");
       localStorage.setItem("zz_cloud_backup_ts", Date.now().toString());
       _updateCloudBackupUI(true);
-      // Immediately save current data to cloud
       var email = localStorage.getItem("zz_license");
-      if (email) {
-        _activeEmail = email;
-        _saveToCloud();
-        showToast("☁️ Cloud backup enabled");
-      }
+      if (email) { _activeEmail = email; _saveToCloud(); showToast("☁️ Cloud backup enabled"); }
     } else {
       localStorage.setItem("zz_cloud_backup", "0");
       _updateCloudBackupUI(false);
@@ -17889,9 +17843,9 @@
   }
 
   function _updateCloudBackupUI(enabled) {
-    var toggle  = document.getElementById("cloudBackupToggle");
-    var status  = document.getElementById("cloud-backup-status");
-    var delRow  = document.getElementById("cloud-delete-row");
+    var toggle = document.getElementById("cloudBackupToggle");
+    var status = document.getElementById("cloud-backup-status");
+    var delRow = document.getElementById("cloud-delete-row");
     if (toggle) toggle.checked = enabled;
     if (status) {
       status.style.display = enabled ? "block" : "none";
@@ -17910,30 +17864,23 @@
     var ok = confirm("Delete all your cloud data?\n\nYour local data stays intact. This only removes the copy stored on our servers.");
     if (!ok) return;
     fetch(_WORKER_URL + "/delete", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ email: email })
-    })
-    .then(function(r) { return r.json(); })
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    }).then(function(r) { return r.json(); })
     .then(function(res) {
       if (res.ok) {
         localStorage.setItem("zz_cloud_backup", "0");
         _updateCloudBackupUI(false);
         showToast("☁️ Cloud data deleted");
-      } else {
-        showToast("Error: " + (res.error || "unknown"));
-      }
-    })
-    .catch(function() { showToast("Connection error"); });
+      } else { showToast("Error: " + (res.error || "unknown")); }
+    }).catch(function() { showToast("Connection error"); });
   }
 
-  // Init cloud backup UI on load
   function _initCloudBackupUI() {
     var enabled = localStorage.getItem("zz_cloud_backup") === "1";
     _updateCloudBackupUI(enabled);
   }
 
-  // ── Cloud sync: save (debounced 4s after last change) ────────────
   function _saveToCloud() {
     if (!_activeEmail) return;
     clearTimeout(_syncTimer);
@@ -17941,176 +17888,151 @@
       var raw = localStorage.getItem("zz_state_v2");
       if (!raw) return;
       fetch(_WORKER_URL + "/save", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ email: _activeEmail, data: raw })
-      }).catch(function() {}); // fail silently — local data is always the source of truth
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: _activeEmail, data: raw })
+      }).catch(function() {});
     }, 4000);
   }
 
-  // ── Cloud sync: load on login ────────────────────────────────────
   function _loadFromCloud(email) {
     fetch(_WORKER_URL + "/load", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ email: email })
-    })
-    .then(function(r) { return r.json(); })
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    }).then(function(r) { return r.json(); })
     .then(function(res) {
-      if (!res.ok || !res.data) return; // No cloud data yet
-
+      if (!res.ok || !res.data) return;
       var localRaw = localStorage.getItem("zz_state_v2");
       if (localRaw) {
-        // Both exist — pick the one with more data (higher JSON length = more entries)
-        // This protects users who start fresh on a new device
         if (res.data.length > localRaw.length) {
           localStorage.setItem("zz_state_v2", res.data);
           if (typeof loadState === "function") loadState();
           showToast("☁️ Data restored from cloud");
         }
       } else {
-        // No local data — restore from cloud
         localStorage.setItem("zz_state_v2", res.data);
         if (typeof loadState === "function") loadState();
         showToast("☁️ Data restored from cloud");
       }
-    })
-    .catch(function() {}); // fail silently
+    }).catch(function() {});
   }
 
+  // ─── LICENSE GATE ─────────────────────────────────────────────────
+  var _LIC_BYPASS = false;
+
   function showLicenseGate() {
-    var gate = document.getElementById("license-gate");
-    if (gate) gate.classList.remove("hidden");
-    // Update buy link
-    var buyLink = document.getElementById("lic-buy-link");
-    if (buyLink) buyLink.href = _STRIPE_LINK;
+    var langGate = document.getElementById("lang-gate");
+    if (langGate) langGate.classList.add("hidden");
+    var quizGate = document.getElementById("quiz-gate");
+    if (quizGate) quizGate.classList.add("hidden");
+    var lg = document.getElementById("license-gate");
+    if (lg) { lg.classList.remove("hidden"); lg.style.display = "flex"; }
+    var inp = document.getElementById("lic-input");
+    if (inp) setTimeout(function(){ inp.focus(); }, 100);
+  }
+
+  function licGoToQuiz() {
+    var lg = document.getElementById("license-gate");
+    if (lg) lg.classList.add("hidden");
+    showLangGate();
   }
 
   function licActivate() {
-    var inp    = document.getElementById("lic-input");
-    var err    = document.getElementById("lic-error");
-    var btnTxt = document.getElementById("lic-btn-text");
-    var email  = (inp ? inp.value : "").trim().toLowerCase();
-
+    var inp = document.getElementById("lic-input");
+    var email = inp ? (inp.value || "").trim().toLowerCase() : "";
+    var errEl = document.getElementById("lic-error");
+    var btnEl = document.getElementById("lic-btn-text");
     if (!email || !email.includes("@")) {
-      if (inp) inp.classList.add("error");
-      if (err) err.textContent = "✗ Please enter a valid email address";
+      if (errEl) errEl.textContent = _qLang === "en" ? "Please enter a valid email address." : "Prosimo vnesite veljaven e-mail.";
       return;
     }
-
-    // Show loading state
-    if (btnTxt) btnTxt.textContent = "Checking…";
-    if (inp) inp.disabled = true;
-    if (err) err.textContent = "";
-
+    if (errEl) errEl.textContent = "";
+    if (btnEl) btnEl.textContent = _qLang === "en" ? "Checking…" : "Preverjanje…";
     fetch(_WORKER_URL + "/validate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.active) {
+    }).then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res.active) {
         localStorage.setItem("zz_license", email);
-        localStorage.setItem("zz_license_ts", Date.now().toString());
         _activeEmail = email;
-        _applyQuizDataToProfile();
-        var gate = document.getElementById("license-gate");
-        if (gate) gate.classList.add("hidden");
-        _licStartup();
+        // Apply quiz profile data if not yet set
+        var qdRaw = localStorage.getItem("zz_quiz_data");
+        if (qdRaw) {
+          try {
+            var qd = JSON.parse(qdRaw);
+            if (qd.name && !state.profile.userName) {
+              state.profile.userName = qd.name;
+              if (qd.goal) state.profile.goal = qd.goal === 'lose' ? 'hujšanje' : qd.goal === 'gain' ? 'pridobivanje mišic' : 'splošna kondicija';
+              if (qd.weight) state.profile.weight = qd.weight;
+              if (qd.height) state.profile.height = qd.height;
+              if (qd.age) state.profile.age = qd.age;
+              if (qd.goalWeight) state.profile.goalWeight = qd.goalWeight;
+              if (qd.gender) state.profile.sex = qd.gender;
+              // Calculate and store target calories
+              if (qd.weight && qd.height && qd.age) {
+                var bmr = qd.gender === 'm'
+                  ? (10*qd.weight + 6.25*qd.height - 5*qd.age + 5)
+                  : (10*qd.weight + 6.25*qd.height - 5*qd.age - 161);
+                var act = parseFloat(qd.activity) || 1.375;
+                var tdee = Math.round(bmr * act);
+                var adj = qd.goal === 'lose' ? -500 : qd.goal === 'gain' ? 300 : 0;
+                state.profile.dailyKcal = Math.round(tdee + adj);
+              }
+              saveState();
+            }
+          } catch(e) {}
+        }
+        // Load cloud data if opt-in enabled
         if (localStorage.getItem("zz_cloud_backup") === "1") _loadFromCloud(email);
+        _enterApp();
       } else {
-        if (inp) { inp.classList.add("error"); inp.disabled = false; }
-        if (btnTxt) btnTxt.textContent = "Continue →";
-        if (err) err.innerHTML = "✗ No active subscription found for this email.<br>" +
-          "<a href='" + _STRIPE_LINK + "' target='_blank' style='color:var(--green)'>Subscribe for €4.99/month →</a>";
+        if (errEl) errEl.textContent = _qLang === "en" ? "No active subscription found for this email." : "Za ta e-mail ni aktivne naročnine.";
+        if (btnEl) btnEl.textContent = _qLang === "en" ? "Continue →" : "Naprej →";
       }
-    })
-    .catch(function() {
-      // Network error — allow offline access if previously validated (within 7 days)
-      var cached   = localStorage.getItem("zz_license");
-      var cachedTs = parseInt(localStorage.getItem("zz_license_ts") || "0", 10);
-      var sevenDays = 7 * 24 * 60 * 60 * 1000;
-      if (cached && (Date.now() - cachedTs) < sevenDays) {
-        _applyQuizDataToProfile();
-        var gate = document.getElementById("license-gate");
-        if (gate) gate.classList.add("hidden");
-        _licStartup();
-      } else {
-        if (inp) { inp.classList.add("error"); inp.disabled = false; }
-        if (btnTxt) btnTxt.textContent = "Continue →";
-        if (err) err.textContent = "✗ Connection error. Please try again.";
-      }
+    }).catch(function() {
+      if (errEl) errEl.textContent = _qLang === "en" ? "Connection error. Please try again." : "Napaka pri povezavi. Poskusite znova.";
+      if (btnEl) btnEl.textContent = _qLang === "en" ? "Continue →" : "Naprej →";
     });
+  }
+
+  function _enterApp() {
+    ["lang-gate","quiz-gate","license-gate"].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add("hidden");
+    });
+    var discAccepted = localStorage.getItem("zz_disclaimer_v1");
+    if (!discAccepted) {
+      var modal = document.getElementById("disclaimer-modal");
+      if (modal) modal.classList.add("open");
+    } else {
+      var obDone = localStorage.getItem("zz_onb_done");
+      if (!obDone) showOnboarding();
+      else { loadState(); navigate("dashboard"); }
+    }
   }
 
   function _licStartup() {
     _initCloudBackupUI();
     initLangSelectOverlay();
-    var savedLang = localStorage.getItem("zz_lang") || "sl";
-    _currentLang = savedLang;
-    _updateLangButton(savedLang);
-    if (savedLang !== "sl") applyLanguage(savedLang);
-
-    var langChosen = localStorage.getItem("zz_lang_chosen");
-    if (!langChosen) {
-      var ov = document.getElementById("lang-select-overlay");
-      if (ov) ov.classList.remove("hidden");
-      return;
-    }
-    translateDisclaimer(savedLang);
-    translateStorageBanner(savedLang);
-    var storageSeen = localStorage.getItem("zz_storage_notice");
-    var storageBanner = document.getElementById("storage-banner");
-    if (storageBanner) {
-      if (storageSeen) storageBanner.classList.add("hidden");
-      else storageBanner.classList.remove("hidden");
-    }
-    var discAccepted = localStorage.getItem("zz_disclaimer_v1");
-    var discModal = document.getElementById("disclaimer-modal");
-    if (discModal) {
-      if (discAccepted) discModal.classList.remove("open");
-      else discModal.classList.add("open");
-    }
-    if (!discAccepted) return;
-    var obDone = localStorage.getItem("zz_onb_done");
-    if (!obDone) showOnboarding();
-    else navigate("dashboard");
-  }
-
-  // ─── "Nimam še računa" → pokaži quiz/lang gate ───────────────────
-  function licGoToQuiz() {
-    var gate = document.getElementById("license-gate");
-    if (gate) gate.classList.add("hidden");
-    var langChosen = localStorage.getItem("zz_lang");
-    if (langChosen) {
-      _qLang = langChosen;
-      document.body.classList.toggle("lang-en", langChosen === "en");
-      showQuizGate();
+    var email = localStorage.getItem("zz_license");
+    if (_LIC_BYPASS || email) {
+      if (email) _activeEmail = email;
+      _enterApp();
     } else {
-      showLangGate();
+      var savedLang = localStorage.getItem("zz_lang");
+      if (savedLang) {
+        _translateLicGate(savedLang);
+        showLicenseGate();
+      } else {
+        showLangGate();
+      }
     }
   }
 
-  // ─── STARTUP ─────────────────────────────────────────────────────
-  (function() {
-    loadState();
-    var savedEmail = localStorage.getItem("zz_license");
-    var savedTs    = parseInt(localStorage.getItem("zz_license_ts") || "0", 10);
-    var sevenDays  = 7 * 24 * 60 * 60 * 1000;
-    if (!savedEmail || (Date.now() - savedTs) > sevenDays) {
-      // Vedno pokaži izbiro jezika najprej (za nepriaavljene)
-      var langChosen = localStorage.getItem("zz_lang");
-      if (langChosen) {
-        _qLang = langChosen;
-        document.body.classList.toggle("lang-en", langChosen === "en");
-        _translateLicGate(langChosen);
-      }
-      showLangGate();
-      return;
-    }
+  document.addEventListener("DOMContentLoaded", function() {
     _licStartup();
-  })();
+  });
 
 </script>
 </body>
