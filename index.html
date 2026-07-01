@@ -4400,6 +4400,26 @@
         <button class="btn btn-ghost" onclick="document.getElementById('importFileInput').click()" style="width:100%;border:1.5px dashed var(--border-medium);" data-i18n="backup_file_select">
           📂 Izberi JSON datoteko za uvoz
         </button>
+
+        <!-- Cloud Backup Toggle -->
+        <div style="border-top:1px solid var(--border-soft);margin-top:1.1rem;padding-top:1.1rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:0.5rem;">
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;color:var(--text-primary);">☁️ Cloud backup</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem;">Sync data across devices via Cloudflare</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="cloudBackupToggle" onchange="toggleCloudBackup(this)" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <div id="cloud-backup-status" style="display:none;font-size:0.78rem;color:var(--text-muted);background:var(--surface-low);border-radius:var(--radius-sm);padding:0.55rem 0.75rem;margin-top:0.4rem;"></div>
+          <div id="cloud-delete-row" style="display:none;margin-top:0.6rem;">
+            <button class="btn btn-ghost" onclick="deleteCloudData()" style="width:100%;color:var(--red);border-color:var(--red);font-size:0.82rem;">
+              🗑️ Delete my cloud data
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -5769,7 +5789,7 @@
   // ─── PERSISTENCE ───
   function saveState() {
     localStorage.setItem("zz_state_v2", JSON.stringify(state));
-    _saveToCloud();
+    if (localStorage.getItem("zz_cloud_backup") === "1") _saveToCloud();
   }
 
   function loadState() {
@@ -17834,6 +17854,85 @@
   var _activeEmail = localStorage.getItem("zz_license") || null;
   var _syncTimer   = null;
 
+  // ── Cloud backup toggle (opt-in) ────────────────────────────────
+  function toggleCloudBackup(cb) {
+    if (cb.checked) {
+      // Show consent dialog before enabling
+      var ok = confirm(
+        "Cloud Backup — Consent\n\n" +
+        "By enabling this feature, your health data (meals, workouts, weight, sleep) " +
+        "will be securely stored on Cloudflare's servers linked to your email address.\n\n" +
+        "• Data is used only to sync across your devices\n" +
+        "• You can delete your cloud data at any time\n" +
+        "• This is optional — the app works fully without it\n\n" +
+        "Do you agree?"
+      );
+      if (!ok) {
+        cb.checked = false;
+        return;
+      }
+      localStorage.setItem("zz_cloud_backup", "1");
+      localStorage.setItem("zz_cloud_backup_ts", Date.now().toString());
+      _updateCloudBackupUI(true);
+      // Immediately save current data to cloud
+      var email = localStorage.getItem("zz_license");
+      if (email) {
+        _activeEmail = email;
+        _saveToCloud();
+        showToast("☁️ Cloud backup enabled");
+      }
+    } else {
+      localStorage.setItem("zz_cloud_backup", "0");
+      _updateCloudBackupUI(false);
+      showToast("Cloud backup disabled");
+    }
+  }
+
+  function _updateCloudBackupUI(enabled) {
+    var toggle  = document.getElementById("cloudBackupToggle");
+    var status  = document.getElementById("cloud-backup-status");
+    var delRow  = document.getElementById("cloud-delete-row");
+    if (toggle) toggle.checked = enabled;
+    if (status) {
+      status.style.display = enabled ? "block" : "none";
+      if (enabled) {
+        var ts = localStorage.getItem("zz_cloud_backup_ts");
+        var date = ts ? new Date(parseInt(ts)).toLocaleDateString() : "—";
+        status.textContent = "✓ Enabled since " + date + ". Data syncs automatically after each change.";
+      }
+    }
+    if (delRow) delRow.style.display = enabled ? "block" : "none";
+  }
+
+  function deleteCloudData() {
+    var email = localStorage.getItem("zz_license");
+    if (!email) { showToast("Not logged in"); return; }
+    var ok = confirm("Delete all your cloud data?\n\nYour local data stays intact. This only removes the copy stored on our servers.");
+    if (!ok) return;
+    fetch(_WORKER_URL + "/delete", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ email: email })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res.ok) {
+        localStorage.setItem("zz_cloud_backup", "0");
+        _updateCloudBackupUI(false);
+        showToast("☁️ Cloud data deleted");
+      } else {
+        showToast("Error: " + (res.error || "unknown"));
+      }
+    })
+    .catch(function() { showToast("Connection error"); });
+  }
+
+  // Init cloud backup UI on load
+  function _initCloudBackupUI() {
+    var enabled = localStorage.getItem("zz_cloud_backup") === "1";
+    _updateCloudBackupUI(enabled);
+  }
+
   // ── Cloud sync: save (debounced 4s after last change) ────────────
   function _saveToCloud() {
     if (!_activeEmail) return;
@@ -17919,7 +18018,7 @@
         var gate = document.getElementById("license-gate");
         if (gate) gate.classList.add("hidden");
         _licStartup();
-        _loadFromCloud(email); // Restore data if user is on new device
+        if (localStorage.getItem("zz_cloud_backup") === "1") _loadFromCloud(email);
       } else {
         if (inp) { inp.classList.add("error"); inp.disabled = false; }
         if (btnTxt) btnTxt.textContent = "Continue →";
@@ -17946,6 +18045,7 @@
   }
 
   function _licStartup() {
+    _initCloudBackupUI();
     initLangSelectOverlay();
     var savedLang = localStorage.getItem("zz_lang") || "sl";
     _currentLang = savedLang;
